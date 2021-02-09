@@ -132,41 +132,42 @@ def variance_weighted_average(fname,
     export_nifti(wavg.astype(float), img, exname)
 
 
-def compute_metric(data, atlases, mask, metric='avg'):
+def compute_metric(data, atlas, mask, metric='avg', invert=False):
     """
     Compute a metric (e.g. average) in the parcels of an atlas.
 
-    The metric is computed in the last axis of `data`.
+    The metric is computed in the last axis of `data`, and it assumes that the
+    "target" map is the last element in the axis.
     """
-    print(f'Compute metrics: {metric}')
-    comp = dict.fromkeys(atlases.keys())
-    for atlas in atlases.keys():
-        print(f'Working on {atlas}')
-        unique = np.unique(atlases[atlas])
-        unique = unique[unique > 0]
-        print(f'Labels: {unique}, len: {len(unique)}, surr: {data.shape[-1]}')
-        # Initialise dataframe and dictionary for series
-        parcels = np.empty([len(unique), data.shape[-1]])
+    print(f'Compute metric {metric} in atlas: {atlas}')
+    unique = np.unique(atlas)
+    unique = unique[unique > 0]
+    print(f'Labels: {unique}, len: {len(unique)}, surr: {data.shape[-1]}')
+    # Initialise dataframe and dictionary for series
+    parcels = np.empty([len(unique), data.shape[-1]])
 
-        # Compute averages
-        for m, label in enumerate(unique):
-            print(f'Metric: {metric}, Label: {label} ({m})')
-            if metric == 'avg':
-                parcels[m, :] = data[atlases[atlas] == label].mean(axis=0)
-            elif metric == 'iqr':
-                dist = data[atlases[atlas] == label]
-                parcels[m, :] = (np.percentile(dist, 75, axis=0) -
-                                 np.percentile(dist, 25, axis=0))
+    # Compute averages
+    for m, label in enumerate(unique):
+        print(f'Metric: {metric}, Label: {label} ({m})')
+        if metric == 'avg':
+            parcels[m, :] = data[atlas == label].mean(axis=0)
+        elif metric == 'iqr':
+            dist = data[atlas == label]
+            parcels[m, :] = (np.percentile(dist, 75, axis=0) -
+                             np.percentile(dist, 25, axis=0))
+        elif metric == 'var':
+            dist = data[atlas == label]
+            parcels[m, :] = data[atlas == label].var(axis=0)
 
-        rank = compute_rank(parcels)
-        if metric == 'iqr':
-            print('Invert iqr rank')
-            rank = 100 - rank
+    rank = compute_rank(parcels)
+    if invert:
+        print(f'Invert {metric} rank')
+        rank = 100 - rank
 
-        comp[atlas] = atlases[atlas].copy()
+    comp = atlas.copy()
 
-        print(f'Recompose atlas {atlas}')
-        for m, label in enumerate(unique):
-            comp[atlas][atlases[atlas] == label] = rank[m]
+    print(f'Recompose atlas {atlas}')
+    for m, label in enumerate(unique):
+        comp[atlas == label] = rank[m]
 
     return comp
