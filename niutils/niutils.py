@@ -19,14 +19,19 @@ COLOURS = ['#1f77b4ff', '#2ca02cff', '#d62728ff', '#ff7f0eff', '#ff33ccff']
 #########
 # Utils #
 #########
+def check_ext(fname, ext='.nii.gz'):
+    """
+    Check the extension of input. It's possible to add it.
+    """
+    if fname.endswith(ext):
+        fname = fname[:-7]
+    return f'{fname}{ext}'
 
 def load_nifti_get_mask(fname, dim=4):
     """
     Load a nifti file and returns its data, its image, and a 3d mask.
     """
-    if fname.endswith('.nii.gz'):
-        fname = fname[:-7]
-    img = nib.load(f'{fname}.nii.gz')
+    img = nib.load(check_ext(fname))
     data = img.get_fdata()
     if len(data.shape) > dim:
         for ax in range(dim, len(data.shape)):
@@ -39,7 +44,7 @@ def load_nifti_get_mask(fname, dim=4):
     return data, mask, img
 
 
-def compute_rank(data):
+def compute_rank(data, islast=True):
     """
     Compute the ranks in the last axis of a matrix.
 
@@ -47,7 +52,10 @@ def compute_rank(data):
     This is useful to compare e.g. a bunch of surrogates to real data.
     """
     reord = np.argsort(data, axis=-1)
-    rank = reord.argmax(axis=-1)
+    if islast:
+        rank = reord.argmax(axis=-1)
+    else:
+        rank = reord.argmin(axis=-1)
     return rank/(data.shape[-1]-1)*100
 
 
@@ -56,9 +64,7 @@ def export_nifti(data, img, fname):
     Export a nifti file.
     """
     out_img = nib.Nifti1Image(data, img.affine, img.header)
-    if fname.endswith('.nii.gz'):
-        fname = fname[:-7]
-    out_img.to_filename(f'{fname}.nii.gz')
+    out_img.to_filename(check_ext(fname))
 
 
 #############
