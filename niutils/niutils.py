@@ -144,8 +144,11 @@ def compute_metric(data, atlas, mask, metric='avg', invert=False):
 
     The metric is computed in the last axis of `data`, and it assumes that the
     "target" map is the last element in the axis.
+
+    It then returns the metric in the "target" map and its rank equivalent.
     """
-    print(f'Compute metric {metric} in atlas: {atlas}')
+    print(f'Compute metric {metric} in atlas')
+    atlas = atlas*mask
     unique = np.unique(atlas)
     unique = unique[unique > 0]
     print(f'Labels: {unique}, len: {len(unique)}, surr: {data.shape[-1]}')
@@ -170,10 +173,15 @@ def compute_metric(data, atlas, mask, metric='avg', invert=False):
         print(f'Invert {metric} rank')
         rank = 100 - rank
 
-    comp = atlas.copy()
+    rank_map = atlas.copy()
+    orig_metric = atlas.copy()
 
-    print(f'Recompose atlas {atlas}')
+    print(f'Recompose atlas with rank')
     for m, label in enumerate(unique):
-        comp[atlas == label] = rank[m]
+        rank_map[atlas == label] = rank[m]
 
-    return comp
+    print(f'Recompose atlas with computed metric ({metric})')
+    for m, label in enumerate(unique):
+        orig_metric[atlas == label] = parcels[m, -1]
+
+    return rank_map, orig_metric
