@@ -176,7 +176,7 @@ def compute_metric(data, atlas, mask, metric='avg', invert=False):
     rank_map = atlas.copy()
     orig_metric = atlas.copy()
 
-    print(f'Recompose atlas with rank')
+    print('Recompose atlas with rank')
     for m, label in enumerate(unique):
         rank_map[atlas == label] = rank[m]
 
