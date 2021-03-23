@@ -1,8 +1,0 @@
-version: 1.0
-requirements:
-  - requirements.txt
-  - setup.cfg
-  - setup.py
-  - tox.ini
-  - path: /requirements.txt
-    parser: python/pip

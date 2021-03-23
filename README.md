@@ -1,6 +1,6 @@
-<!--(https://raw.githubusercontent.com/physiopy/phys2denoise/master/docs/_static/phys2denoise_card.jpg)-->
 <a name="readme"></a>
-<!-- <img alt="physiopy" src="https://github.com/physiopy/phys2denoise/blob/master/docs/_static/phys2denoise_logo1280×640.png" height="150"> -->
+
+This is a copy of the repository [niutils](https://github.com/smoia/niutils) to be used for OpenMR workshop example.
 
 niutils
 =======
