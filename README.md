@@ -1,13 +1,14 @@
 <!--(https://raw.githubusercontent.com/physiopy/phys2denoise/master/docs/_static/phys2denoise_card.jpg)-->
 <a name="readme"></a>
 <!-- <img alt="physiopy" src="https://github.com/physiopy/phys2denoise/blob/master/docs/_static/phys2denoise_logo1280×640.png" height="150"> -->
+(This repository is a copy of the [niutils repo]).
 
 niutils
 =======
 
 This is a quick collection of little (f)MRI utils functions collected together because I found myself using them quite often, packaged in pip to be easy to adopt.
 I have no idea nor strict plan to where this project should/could/would go.
-If you find yourself using this project (why?) let me know - so I can decide how to properly make it citable. 
+If you find yourself using this project (why?) let me know - so I can decide how to properly make it citable.
 
 **The project is currently (and in perpetuum) under development**.
 Any suggestion/bug report is welcome! Feel free to open an issue.
