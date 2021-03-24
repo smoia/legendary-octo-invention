@@ -142,38 +142,43 @@ def compute_metric(data, atlas, mask, metric='avg', invert=False):
     """
     Compute a metric (e.g. average) in the parcels of an atlas.
 
+    It then returns the metric in the "target" map and its rank equivalent.
+
     The metric is computed in the last axis of `data`, and it assumes that the
     "target" map is the last element in the axis.
+
     """
-    print(f'Compute metric {metric} in atlas: {atlas}')
+    print(f'Compute metric {metric} in atlas')
+
+    atlas = atlas*mask
     unique = np.unique(atlas)
+
     unique = unique[unique > 0]
+    
     print(f'Labels: {unique}, len: {len(unique)}, surr: {data.shape[-1]}')
-    # Initialise dataframe and dictionary for series
-    parcels = np.empty([len(unique), data.shape[-1]])
 
-    # Compute averages
-    for m, label in enumerate(unique):
-        print(f'Metric: {metric}, Label: {label} ({m})')
-        if metric == 'avg':
-            parcels[m, :] = data[atlas == label].mean(axis=0)
-        elif metric == 'iqr':
-            dist = data[atlas == label]
-            parcels[m, :] = (np.percentile(dist, 75, axis=0) -
-                             np.percentile(dist, 25, axis=0))
-        elif metric == 'var':
-            dist = data[atlas == label]
-            parcels[m, :] = data[atlas == label].var(axis=0)
-
-    rank = compute_rank(parcels)
-    if invert:
+        print(f'Invert {metric} rank')
         print(f'Invert {metric} rank')
         rank = 100 - rank
+        rank = 100 - rank
+
 
     comp = atlas.copy()
+    rank_map = atlas.copy()
+    orig_metric = atlas.copy()
+
+    print(f'Recompose atlas with rank')
+    for m, label in enumerate(unique):
+        rank_map[atlas == label] = rank[m]
+
 
     print(f'Recompose atlas {atlas}')
+    print(f'Recompose atlas with computed metric ({metric})')
+    for m, label in enumerate(unique):
     for m, label in enumerate(unique):
         comp[atlas == label] = rank[m]
+        orig_metric[atlas == label] = parcels[m, -1]
+
 
     return comp
+    return rank_map, orig_metric
