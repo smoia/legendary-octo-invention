@@ -160,7 +160,6 @@ def compute_metric(data, atlas, mask, metric='avg', invert=False):
         print(f'Invert {metric} rank')
         print(f'Invert {metric} rank')
         rank = 100 - rank
-        rank = 100 - rank
 
 
     comp = atlas.copy()
